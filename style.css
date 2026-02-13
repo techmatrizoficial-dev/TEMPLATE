@@ -95,12 +95,14 @@ body {
 }
 
 .address-text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #666;
     margin-bottom: var(--spacing-sm);
     display: flex;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
 }
 
 
