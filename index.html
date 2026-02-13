@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante Menu</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <header class="restaurant-header">
+        <div class="banner-container" id="banner-img">
+            <!-- Banner Image set via JS -->
+        </div>
+        <div class="header-content">
+            <div class="profile-container">
+                <img src="" alt="Avatar Restaurante" id="profile-img" class="profile-img">
+                <div class="status-indicator" id="status-indicator"></div>
+            </div>
+            <div class="info-container">
+                <h1 id="restaurant-name">Nome do Restaurante</h1>
+                <p id="restaurant-hours" class="hours-text"><i class="fa-regular fa-clock"></i> <span>--</span></p>
+                <p id="restaurant-address" class="address-text"><i class="fa-solid fa-location-dot"></i> <span>--</span>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav" id="sticky-nav">
+        <ul class="nav-list" id="nav-list">
+            <!-- Navigation items injected via JS -->
+        </ul>
+    </nav>
+
+    <!-- Main Menu Content -->
+    <main class="menu-container" id="menu-container">
+        <!-- Menu sections injected via JS -->
+    </main>
+
+    <!-- Product Details Overlay (Full Screen) -->
+    <div id="product-overlay" class="product-overlay hidden">
+        <div class="overlay-content">
+            <button id="close-overlay-btn" class="close-btn"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+
+            <div class="overlay-image-container">
+                <img src="" alt="" id="overlay-img" class="overlay-img">
+            </div>
+
+            <div class="overlay-details">
+                <h2 id="overlay-title">Nome do Prato</h2>
+                <p id="overlay-desc">Descrição detalhada do prato.</p>
+                <div class="overlay-price" id="overlay-price">R$ 0,00</div>
+
+                <div class="observation-box">
+                    <label for="observation">Alguma observação?</label>
+                    <textarea id="observation" placeholder="Ex: Sem cebola, ponto da carne..."></textarea>
+                </div>
+            </div>
+
+            <div class="overlay-actions">
+                <div class="qty-selector">
+                    <button id="btn-minus" class="qty-btn"><i class="fa-solid fa-minus"></i></button>
+                    <span id="qty-value">1</span>
+                    <button id="btn-plus" class="qty-btn"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <button id="add-to-cart-btn" class="btn-primary-action">
+                    <span>Adicionar</span>
+                    <span id="overlay-total">R$ 0,00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="product-overlay hidden">
+        <div class="overlay-content">
+            <button id="close-cart-btn" class="close-btn"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+
+            <div class="cart-header">
+                <h2>Meu Pedido</h2>
+                <button id="clear-cart-btn" class="text-btn text-danger"><i class="fa-solid fa-trash"></i>
+                    Esvaziar</button>
+            </div>
+
+            <div id="cart-items-list" class="cart-items-list">
+                <!-- Items injected here -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="cart-overlay-total">R$ 0,00</span>
+                </div>
+            </div>
+
+            <div class="checkout-form">
+                <h3>Dados do Pedido</h3>
+
+                <!-- Step 1: Name (Always visible) -->
+                <div class="form-group">
+                    <label for="client-name">Nome Completo *</label>
+                    <input type="text" id="client-name" placeholder="Seu nome" required>
+                </div>
+
+                <!-- Step 2: Address/Pickup (Hidden initially) -->
+                <div id="step-address-pickup" class="hidden">
+                    <div class="form-group" id="address-container">
+                        <label for="client-address">Endereço de Entrega *</label>
+                        <textarea id="client-address" placeholder="Rua, número, complemento..." rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group-inline">
+                        <input type="checkbox" id="is-pickup">
+                        <label for="is-pickup">Vou retirar no local</label>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment (Hidden initially, only for Delivery) -->
+                <div id="step-payment" class="hidden">
+                    <div class="form-group">
+                        <label>Forma de Pagamento *</label>
+                        <div class="payment-options">
+                            <label class="radio-label">
+                                <input type="radio" name="payment-method" value="Cartão de Crédito/Débito"> Cartão
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="payment-method" value="Pix"> Pix
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="payment-method" value="Dinheiro"> Dinheiro
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group hidden" id="change-container">
+                        <label for="change-for">Troco para quanto?</label>
+                        <input type="text" id="change-for" placeholder="Ex: 50,00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="overlay-actions">
+                <button id="finalize-order-btn" class="btn-primary-action" style="justify-content: center;">
+                    Enviar Pedido <i class="fa-brands fa-whatsapp" style="margin-left: 10px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Cart Bar -->
+    <div id="floating-cart" class="floating-cart hidden">
+        <div class="cart-info">
+            <p>Meu Pedido</p>
+            <span id="cart-count">0 itens</span>
+        </div>
+        <div class="cart-total-container">
+            <span id="cart-total">R$ 0,00</span>
+            <button id="checkout-btn">Finalizar <i class="fa-brands fa-whatsapp"></i></button>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
