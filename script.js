@@ -18,16 +18,17 @@ function renderHeader() {
     document.getElementById('restaurant-name').textContent = data.name;
 
     // Set Status and Hours
-    const isOpen = checkOpenStatus(data.schedule);
+    const statusData = getRestaurantStatus(data.schedule);
     const statusEl = document.getElementById('status-indicator');
     const hoursEl = document.getElementById('restaurant-hours');
 
-    if (isOpen) {
+    if (statusData.isOpen) {
         statusEl.style.backgroundColor = "#2ecc71"; // Green
-        hoursEl.innerHTML = `<span style="color: #2ecc71; font-weight: 700;">ABERTO</span> <i class="fa-regular fa-clock" style="margin-left: 8px;"></i> ${data.hours}`;
+        hoursEl.innerHTML = `<span style="color: #2ecc71; font-weight: 700;">ABERTO</span> <span style="font-size: 0.9em; color: #666;"> - Fechamos às ${statusData.time}</span>`;
     } else {
         statusEl.style.backgroundColor = "#e74c3c"; // Red
-        hoursEl.innerHTML = `<span style="color: #e74c3c; font-weight: 700;">FECHADO</span> <i class="fa-regular fa-clock" style="margin-left: 8px;"></i> ${data.hours}`;
+        const timeText = statusData.isToday ? `às ${statusData.time}` : `${getDayName(statusData.dayIndex)} às ${statusData.time}`;
+        hoursEl.innerHTML = `<span style="color: #e74c3c; font-weight: 700;">FECHADO</span> <span style="font-size: 0.9em; color: #666;"> - Abrimos ${timeText}</span>`;
     }
 
     // Set Address
@@ -41,32 +42,58 @@ function renderHeader() {
     document.getElementById('profile-img').src = data.avatarUrl;
 }
 
-function checkOpenStatus(schedule) {
-    if (!schedule) return true; // Default to open if no schedule
+function getRestaurantStatus(schedule) {
+    if (!schedule) return { isOpen: true, time: "--:--" };
 
     const now = new Date();
-    const currentDay = now.getDay(); // 0-6 (Sun-Sat)
+    const currentDay = now.getDay();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const currentTime = currentHour * 60 + currentMinute;
 
-    // Find today's schedule
-    const todaySchedule = schedule.find(s => s.days.includes(currentDay));
+    // 1. Check if OPEN NOW
+    const todayRules = schedule.filter(s => s.days.includes(currentDay));
+    for (const rule of todayRules) {
+        const [openH, openM] = rule.open.split(':').map(Number);
+        const [closeH, closeM] = rule.close.split(':').map(Number);
 
-    if (!todaySchedule) return false; // Closed today
+        const openTime = openH * 60 + openM;
+        const closeTime = closeH * 60 + closeM;
 
-    const [openHour, openMinute] = todaySchedule.open.split(':').map(Number);
-    const [closeHour, closeMinute] = todaySchedule.close.split(':').map(Number);
-
-    const openTime = openHour * 60 + openMinute;
-    const closeTime = closeHour * 60 + closeMinute;
-
-    // Handle overnight hours (e.g. 18:00 to 02:00)
-    if (closeTime < openTime) {
-        return currentTime >= openTime || currentTime < closeTime;
+        if (currentTime >= openTime && currentTime < closeTime) {
+            return { isOpen: true, time: rule.close };
+        }
     }
 
-    return currentTime >= openTime && currentTime < closeTime;
+    // 2. If CLOSED, find NEXT OPEN time
+    // Check later today
+    for (const rule of todayRules) {
+        const [openH, openM] = rule.open.split(':').map(Number);
+        const openTime = openH * 60 + openM;
+
+        if (currentTime < openTime) {
+            return { isOpen: false, time: rule.open, isToday: true };
+        }
+    }
+
+    // Check future days
+    for (let i = 1; i <= 7; i++) {
+        const nextDay = (currentDay + i) % 7;
+        const nextDayRules = schedule.filter(s => s.days.includes(nextDay));
+
+        if (nextDayRules.length > 0) {
+            // Find earliest open time for that day
+            const sortedRules = nextDayRules.sort((a, b) => a.open.localeCompare(b.open));
+            return { isOpen: false, time: sortedRules[0].open, isToday: false, dayIndex: nextDay };
+        }
+    }
+
+    return { isOpen: false, time: "--:--" };
+}
+
+function getDayName(dayIndex) {
+    const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    return days[dayIndex];
 }
 
 function renderNav() {

@@ -732,3 +732,35 @@ body {
         transform: translateX(100%);
     }
 }
+
+/* Footer Styles */
+.restaurant-footer {
+    text-align: center;
+    padding: 15px 20px 80px;
+    /* Extra bottom padding for floating cart */
+    background-color: var(--bg-color);
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.restaurant-footer p {
+    margin-bottom: 5px;
+}
+
+.restaurant-footer strong {
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+.restaurant-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.restaurant-footer a:hover {
+    opacity: 0.8;
+}
